@@ -1,7 +1,7 @@
 import socket
 from RasaAiService import RasaAiService
 import requests
-import time,os
+import time,os, base64
 from pydub import AudioSegment , playback
 import pyaudio
 from typing import IO , Any
@@ -11,7 +11,6 @@ FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
 
-print("format: {}".format(FORMAT))
 class Server :
     def __init__(self, host:str, port:int) -> None:
         self.host = host
@@ -35,7 +34,7 @@ class Server :
         audio = AudioSegment(data,channels=CHANNELS, frame_rate=RATE,sample_width=sample_width)
         exportData = audio.export(out_f='temp-audio-{}.wav'.format(id.replace('.','')),format='wav')
         with open(exportData.name,'rb') as wav_file:
-                res = requests.post('http://localhost:5000/transcript', files={'wav-file': wav_file.read()})
+                res = requests.post('http://10.105.173.63:5000/transcript', files={'wav-file': wav_file.read()})
         exportData.close()
         os.remove(exportData.name)
         return res
@@ -63,7 +62,7 @@ class Server :
             if(len(transcript.strip()) != 0):
                 ai_response = self.aiService.getApiResponseFromMessageAsText(transcript.strip())
                 print("ai response: {}".format(ai_response))
-
+            
             # start = time.time()
             # import whisper
             # model = whisper.load_model('tiny', device='cpu')
@@ -90,13 +89,13 @@ class Server :
             
             # res_json = res.json()
             # print('response_json: {}'.format(res_json))
-            # res_bytes = base64.b64decode(res_data['bytes'])
-            # conn.send(data_bytes)
+            res_bytes = base64.b64encode(ai_response)
+            conn.send(res_bytes)
         conn.close() # close the connection
         # self.sock.close()
 
 
 if __name__ == "__main__":
-    HOST,PORT = 'localhost', 9999
+    HOST,PORT = 'localhost', 43007
     server = Server(HOST,PORT)
     server.serve()
