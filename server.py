@@ -57,9 +57,11 @@ class Server :
                 break
             transcript:str = res.json()['transcript']
             print('whisper response => {}'.format(res.json()))
-
+            resbytes = base64.b64encode(transcript.strip())
             try:
                 if(len(transcript.strip()) != 0 and transcript != None):
+                    resbytes = base64.b64encode(transcript.strip())
+                    conn.send(resbytes)
                     ai_response = self.aiService.getApiResponseFromMessageAsText(transcript.strip())
                     print("ai response: {}".format(ai_response))
             
