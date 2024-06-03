@@ -59,6 +59,7 @@ class Server :
             # os.remove(exportedData.name)
 
             if(res.status_code != 200):
+                print('error in whisper ai request {}'.format(res.reason))
                 break
             transcript:str = res.json()['transcript']
 
