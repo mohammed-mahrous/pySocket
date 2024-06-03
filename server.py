@@ -56,16 +56,15 @@ class Server :
                 print('error in whisper ai request {}'.format(res.reason))
                 break
             transcript:str = res.json()['transcript']
-            print('whisper response => {}'.format(res.json()))
+            print('whisper transcript => {}'.format(transcript))
             
             try:
-                if(len(transcript.strip()) != 0 and transcript != None):
-                    resbytes = transcript.strip().encode('utf-8')
+                if(len(transcript) != 0 and transcript != None):
+                    resbytes = transcript.encode()
                     conn.send(resbytes)
                     ai_response = self.aiService.getApiResponseFromMessageAsText(transcript.strip())
-                    print("ai response: {}".format(ai_response))
-            
-                    res_bytes = base64.b64encode(ai_response)
+                    print("ai response: {}".format(ai_response))      
+                    res_bytes = ai_response.encode()
                     conn.send(res_bytes)
             except:
                 pass
