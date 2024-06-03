@@ -8,6 +8,8 @@ from typing import IO , Any
 
 RASAHOST = '10.105.173.239'
 RASAPORT = 5005
+WHISPERAIHOST = '10.105.173.63'
+WHISPERAIPORT = 5000
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
@@ -35,7 +37,7 @@ class Server :
         audio = AudioSegment(data,channels=CHANNELS, frame_rate=RATE,sample_width=sample_width)
         exportData = audio.export(out_f='temp-audio-{}.wav'.format(id.replace('.','')),format='wav')
         with open(exportData.name,'rb') as wav_file:
-                res = requests.post('http://10.105.173.63:5000/transcript', files={'wav-file': wav_file.read()})
+                res = requests.post(f'http://{WHISPERAIHOST}:{WHISPERAIPORT}/transcript', files={'wav-file': wav_file.read()})
         exportData.close()
         os.remove(exportData.name)
         return res
