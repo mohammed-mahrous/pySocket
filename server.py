@@ -50,13 +50,7 @@ class Server :
             data = conn.recv(100000 * 2)
             if not data:
                 break
-            # res = self.aiService.getApiResponseFromMessageAsText(str(data))
             res = self._handleAudioBytes(data,address[0])
-            # with open(exportedData.name,'rb') as wav_file:
-            #     res = requests.post('http://localhost:5000/transcript', files={'wav-file': wav_file.read()})
-            
-            # exportedData.close()
-            # os.remove(exportedData.name)
 
             if(res.status_code != 200):
                 print('error in whisper ai request {}'.format(res.reason))
@@ -67,36 +61,9 @@ class Server :
                 ai_response = self.aiService.getApiResponseFromMessageAsText(transcript.strip())
                 print("ai response: {}".format(ai_response))
             
-            # start = time.time()
-            # import whisper
-            # model = whisper.load_model('tiny', device='cpu')
-            # results = model.transcribe(audio=exportData.name,language='ar')
-            # print('results: {}'.format(results['text']))
-            # end = time.time()
-            # print(f"Time taken to run the code by function was {end-start} seconds")
-            
-
-
-            # p = pyaudio.PyAudio()
-            # stream = p.open(format=FORMAT,
-            #         channels=CHANNELS,
-            #         rate=RATE,
-            #         output=True,)
-            # stream.write(audio)
-            # with tempfile.NamedTemporaryFile(mode='bx',suffix='.wav',delete=False) as f:
-            #     f.write(data)
-            #     fileName = f.name
-            
-            #     with open(fileName,'rb') as rf:
-            #         # print('file-bytes-read: {}'.format(rf.read()))
-            #         res = requests.post('http://localhost:5000/transcript', files={'wav-file': rf.read()});
-            
-            # res_json = res.json()
-            # print('response_json: {}'.format(res_json))
             res_bytes = base64.b64encode(ai_response)
             conn.send(res_bytes)
         conn.close() # close the connection
-        # self.sock.close()
 
 
 if __name__ == "__main__":
