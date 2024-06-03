@@ -56,6 +56,7 @@ class Server :
                 print('error in whisper ai request {}'.format(res.reason))
                 break
             transcript:str = res.json()['transcript']
+            print('whisper response => {}'.format(res.json()))
 
             try:
                 if(len(transcript.strip()) != 0 and transcript != None):
