@@ -57,12 +57,16 @@ class Server :
                 break
             transcript:str = res.json()['transcript']
 
-            if(len(transcript.strip()) != 0):
-                ai_response = self.aiService.getApiResponseFromMessageAsText(transcript.strip())
-                print("ai response: {}".format(ai_response))
+            try:
+                if(len(transcript.strip()) != 0 and transcript != None):
+                    ai_response = self.aiService.getApiResponseFromMessageAsText(transcript.strip())
+                    print("ai response: {}".format(ai_response))
             
-            res_bytes = base64.b64encode(ai_response)
-            conn.send(res_bytes)
+                    res_bytes = base64.b64encode(ai_response)
+                    conn.send(res_bytes)
+            except:
+                pass
+            
         conn.close() # close the connection
 
 
