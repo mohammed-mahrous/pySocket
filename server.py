@@ -6,7 +6,8 @@ from pydub import AudioSegment , playback
 import pyaudio
 from typing import IO , Any
 
-
+RASAHOST = '10.105.173.239'
+RASAPORT = 5005
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 44100
@@ -17,7 +18,7 @@ class Server :
         self.port = port
         self.sock = socket.socket()
         self.serving = False
-        self.aiService = RasaAiService()
+        self.aiService = RasaAiService(host=RASAHOST,port=RASAPORT)
 
     def serve(self):
         self.sock.bind((self.host,self.port))
