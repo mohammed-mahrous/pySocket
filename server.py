@@ -12,7 +12,7 @@ WHISPERAIHOST = '10.105.173.63'
 WHISPERAIPORT = 5000
 FORMAT = pyaudio.paInt16
 CHANNELS = 1
-RATE = 44100
+RATE = 16000
 
 class Server :
     def __init__(self, host:str, port:int) -> None:
@@ -66,7 +66,7 @@ class Server :
                     conn.send(res_bytes)
             except:
                 pass
-            
+
         conn.close() # close the connection
 
 
