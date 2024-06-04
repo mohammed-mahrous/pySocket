@@ -46,9 +46,17 @@ class Server :
     def __handleConnection(self):
         conn , address = self.sock.accept()
         print("Connection from: " + str(address))
+        end_time = time.time() + 5;
         while True:
+            end_time = time.time() + 5;
             # receive data stream. it won't accept data packet greater than 1024 bytes
-            data = conn.recv(100000 * 2)
+            data = None
+            while time.time() < end_time:
+                if(data):
+                    data+= conn.recv(100000 * 2)
+                else:
+                    data = conn.recv(100000 * 2)
+
             if not data:
                 break
             res = self._handleAudioBytes(data,address[0])
