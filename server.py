@@ -7,7 +7,8 @@ import pyaudio
 from typing import IO , Any
 
 RASAHOST = '10.105.173.239'
-RASAPORT = 5005
+RASAPORT = 8080
+RASAAUTHTOKEN = 'mysecrettoken'
 WHISPERAIHOST = '10.105.173.63'
 WHISPERAIPORT = 5000
 FORMAT = pyaudio.paInt16
@@ -20,7 +21,7 @@ class Server :
         self.port = port
         self.sock = socket.socket()
         self.serving = False
-        self.aiService = RasaAiService(host=RASAHOST,port=RASAPORT)
+        self.aiService = RasaAiService(host=RASAHOST,port=RASAPORT,authToken=RASAAUTHTOKEN)
 
     def serve(self):
         self.sock.bind((self.host,self.port))

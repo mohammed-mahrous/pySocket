@@ -15,11 +15,12 @@ class RasaAiService:
         self.__currentIntent = {}
         self.__allMessages:list[str] = []
         self.__currentMessage:str = None
+        self.__params = {'token': self.authToken} if self.authToken else None
 
     def checkServerStatus(self) -> bool:
         endPoint = '/status'
         try:
-            res = requests.get(self.__baseUrl+endPoint,params={'token': self.authToken})
+            res = requests.get(self.__baseUrl+endPoint,params=self.__params)
             if not res.status_code == 200:
                 return False
             return True
@@ -34,7 +35,7 @@ class RasaAiService:
         'sender': 'user'
         }
         try:
-            res = requests.post(self.__baseUrl+endpoint,json=body)
+            res = requests.post(self.__baseUrl+endpoint,json=body, params=self.__params)
             resJson = res.json()
             resMessage = resJson['latest_message']
             intent:dict = resMessage['intent']
@@ -54,7 +55,7 @@ class RasaAiService:
             body = {
             "name": self.__getIntentName()
             }
-            res = requests.post(self.__baseUrl+endPoint,json=body)
+            res = requests.post(self.__baseUrl+endPoint,json=body,params=self.__params)
             resjson = res.json()
             self.__currentIntent = None
             if not len(resjson['messages']) > 0 :
