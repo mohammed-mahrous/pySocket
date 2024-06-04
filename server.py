@@ -63,10 +63,12 @@ class Server :
                 if(len(transcript) != 0 and transcript != None):
                     resbytes = transcript.encode()
                     conn.send(resbytes)
+                    time.sleep(0.5)
                     ai_response = self.aiService.getApiResponseFromMessageAsText(transcript.strip())
                     print("ai response: {}".format(ai_response))      
                     res_bytes = ai_response.encode()
                     conn.send(res_bytes)
+                    time.sleep(0.5)
             except:
                 pass
 
