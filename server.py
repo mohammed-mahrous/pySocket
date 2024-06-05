@@ -41,12 +41,17 @@ class Server :
             self.serving = False
 
 
+    def __getDateTimeFormatted(self) -> str:
+        now = datetime.now()
+        formatted = '{}-{}-{}-{}'.format(now.day,now.hour,now.minute,now.second)
+        return formatted
+
     def _handleAudioBytes(self, data:bytes, id:str) -> requests.Response:
         # pass
         dataLen = len(data)
         sample_width = 2 if dataLen % (CHANNELS * 2) == 0 else 4 if dataLen % (CHANNELS * 4) == 0 else 1
         audio = AudioSegment(data,channels=CHANNELS, frame_rate=RATE,sample_width=sample_width)
-        exportData = audio.export(out_f='temp-audio-{}-{}.wav'.format(id.replace('.',''), datetime.now()),format='wav')
+        exportData = audio.export(out_f='temp-audio-{}-{}.wav'.format(id.replace('.',''), self.__getDateTimeFormatted()),format='wav')
         with open(exportData.name,'rb') as wav_file:
                 res = requests.post(f'http://{WHISPERAIHOST}:{WHISPERAIPORT}/transcript', files={'wav-file': wav_file.read()})
         exportData.close()
