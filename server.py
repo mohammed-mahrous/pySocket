@@ -59,7 +59,7 @@ class Server :
         thread.start()
         # self.__handleClient(conn=conn,address=address)
 
-    def __handleClient(self, conn, address):
+    def __handleClient(self, conn:socket.socket, address):
         try:
             while True:
                 end_time = time.time() + 5;
@@ -86,9 +86,10 @@ class Server :
                     conn.send(resbytes)
                     time.sleep(0.5)
                     ai_response = self.aiService.getApiResponseFromMessageAsText(transcript.strip())
-                    print("ai response: {}".format(ai_response))      
-                    res_bytes = ai_response.encode()
-                    conn.send(res_bytes)
+                    print("ai response: {}".format(ai_response))
+                    if(ai_response):
+                        res_bytes = ai_response.encode()
+                        conn.send(res_bytes)
                     time.sleep(0.5)
         except Exception as e:
             print('err {}'.format(e))
