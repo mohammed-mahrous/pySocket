@@ -24,18 +24,20 @@ class Server :
         self.aiService = RasaAiService(host=RASAHOST,port=RASAPORT,authToken=RASAAUTHTOKEN)
 
     def serve(self):
-        self.sock.bind((self.host,self.port))
-        self.sock.listen(1)
-        self.serving = True
-        while True:
-            try:
+        try:
+
+            self.sock.bind((self.host,self.port))
+            self.sock.listen(1)
+            self.serving = True
+            while True:
                 self.__handleConnection()
-            except KeyboardInterrupt:
-                print("KeyboardInterrupt exception")
-                break
-            except Exception as e:
-                print("err {}".format(e))
-        self.serving = False
+        except KeyboardInterrupt:
+            print("KeyboardInterrupt exception")
+        except Exception as e:
+            print("err {}".format(e))
+        finally:
+            self.sock.close()    
+            self.serving = False
 
 
     def _handleAudioBytes(self, data:bytes, id:str) -> requests.Response:
