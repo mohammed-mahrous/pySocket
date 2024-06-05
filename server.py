@@ -34,6 +34,7 @@ class Server :
                 self.__handleConnection()
         except KeyboardInterrupt:
             print("KeyboardInterrupt exception")
+            self.sock.close()
         except Exception as e:
             print("err {}".format(e))
         finally:
