@@ -1,7 +1,7 @@
 import socket
 from RasaAiService import RasaAiService
 import requests
-import time,os, base64 , threading
+import time,os, base64 , threading, datetime
 from pydub import AudioSegment , playback
 import pyaudio
 from typing import IO , Any
@@ -45,7 +45,7 @@ class Server :
         dataLen = len(data)
         sample_width = 2 if dataLen % (CHANNELS * 2) == 0 else 4 if dataLen % (CHANNELS * 4) == 0 else 1
         audio = AudioSegment(data,channels=CHANNELS, frame_rate=RATE,sample_width=sample_width)
-        exportData = audio.export(out_f='temp-audio-{}.wav'.format(id.replace('.','')),format='wav')
+        exportData = audio.export(out_f='temp-audio-{}-{}.wav'.format(id.replace('.',''), datetime.datetime().now()),format='wav')
         with open(exportData.name,'rb') as wav_file:
                 res = requests.post(f'http://{WHISPERAIHOST}:{WHISPERAIPORT}/transcript', files={'wav-file': wav_file.read()})
         exportData.close()
