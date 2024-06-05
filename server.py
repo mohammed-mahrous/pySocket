@@ -1,7 +1,7 @@
 import socket
 from RasaAiService import RasaAiService
 import requests
-import time,os, base64
+import time,os, base64 , threading
 from pydub import AudioSegment , playback
 import pyaudio
 from typing import IO , Any
@@ -27,7 +27,7 @@ class Server :
         try:
 
             self.sock.bind((self.host,self.port))
-            self.sock.listen(1)
+            self.sock.listen()
             self.serving = True
             while True:
                 self.__handleConnection()
@@ -55,27 +55,32 @@ class Server :
     def __handleConnection(self):
         conn , address = self.sock.accept()
         print("Connection from: " + str(address))
-        while True:
-            end_time = time.time() + 5;
-            # receive data stream. it won't accept data packet greater than 1024 bytes
-            data = None
-            while time.time() < end_time:
-                if(data):
-                    data+= conn.recv(100000 * 2)
-                else:
-                    data = conn.recv(100000 * 2)
+        thread = threading.Thread(target=self.__handleClient, args=(conn,address))
+        thread.start()
+        # self.__handleClient(conn=conn,address=address)
 
-            if not data:
-                break
-            res = self._handleAudioBytes(data,address[0])
+    def __handleClient(self, conn, address):
+        try:
+            while True:
+                end_time = time.time() + 5;
+                # receive data stream. it won't accept data packet greater than 1024 bytes
+                data = None
+                while time.time() < end_time:
+                    if(data):
+                        data+= conn.recv(100000 * 2)
+                    else:
+                        data = conn.recv(100000 * 2)
 
-            if(res.status_code != 200):
-                print('error in whisper ai request {}'.format(res.reason))
-                break
-            transcript:str = res.json()['transcript']
-            print('whisper transcript => {}'.format(transcript))
+                if not data:
+                    break
+                res = self._handleAudioBytes(data,address[0])
+
+                if(res.status_code != 200):
+                    print('error in whisper ai request {}'.format(res.reason))
+                    break
+                transcript:str = res.json()['transcript']
+                print('whisper transcript => {}'.format(transcript))
             
-            try:
                 if(len(transcript) != 0 and transcript != None):
                     resbytes = transcript.encode()
                     conn.send(resbytes)
@@ -85,11 +90,10 @@ class Server :
                     res_bytes = ai_response.encode()
                     conn.send(res_bytes)
                     time.sleep(0.5)
-            except:
-                pass
-            
-
-        conn.close() # close the connection
+        except Exception as e:
+            print('err {}'.format(e))
+        finally:            
+            conn.close() # close the connection
 
 
 if __name__ == "__main__":
