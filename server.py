@@ -72,6 +72,7 @@ class Server :
                         data = conn.recv(100000 * 2)
 
                 if not data:
+                    conn.send('no data'.encode())
                     break
                 res = self._handleAudioBytes(data,address[0])
 
