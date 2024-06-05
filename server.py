@@ -25,9 +25,16 @@ class Server :
 
     def serve(self):
         self.sock.bind((self.host,self.port))
-        self.serving = True
         self.sock.listen(1)
-        self.__handleConnection()
+        self.serving = True
+        while True:
+            try:
+                self.__handleConnection()
+            except KeyboardInterrupt:
+                print("KeyboardInterrupt exception")
+                break
+            except Exception as e:
+                print("err {}".format(e))
         self.serving = False
 
 
@@ -44,8 +51,8 @@ class Server :
         return res
 
     def __handleConnection(self):
+        conn , address = self.sock.accept()
         while True:
-            conn , address = self.sock.accept()
             print("Connection from: " + str(address))
             end_time = time.time() + 5;
             # receive data stream. it won't accept data packet greater than 1024 bytes
@@ -80,7 +87,7 @@ class Server :
                 pass
             
 
-            conn.close() # close the connection
+        conn.close() # close the connection
 
 
 if __name__ == "__main__":
