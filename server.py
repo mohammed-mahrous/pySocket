@@ -12,7 +12,6 @@ RASAPORT = 8080
 RASAAUTHTOKEN = 'mysecrettoken'
 WHISPERAIHOST = '10.105.173.63'
 WHISPERAIPORT = 5000
-FORMAT = pyaudio.paInt16
 CHANNELS = 1
 RATE = 16000
 
@@ -44,7 +43,7 @@ class Server :
 
     def __getDateTimeFormatted(self) -> str:
         now = datetime.now()
-        formatted = '{}-{}-{}-{}'.format(now.day,now.hour,now.minute,now.second)
+        formatted = '{}-{}-{}-{}-{}'.format(now.day,now.hour,now.minute,now.second,now.microsecond)
         return formatted
 
     def _handleAudioBytes(self, data:bytes, id:str) -> requests.Response:
@@ -87,14 +86,14 @@ class Server :
                     print('error in whisper ai request {}'.format(res.reason))
                     break
                 transcript:str = res.json()['transcript']
-                print('whisper transcript => {}'.format(transcript))
+                print('whisper transcript response to "{}" => {}'.format(address[0],transcript))
             
                 if(len(transcript) != 0 and transcript != None):
                     resbytes = transcript.encode()
                     conn.send(resbytes)
                     time.sleep(0.5)
                     ai_response = self.aiService.getApiResponseFromMessageAsText(transcript.strip())
-                    print("ai response: {}".format(ai_response))
+                    print('ai response to "{}": {}'.format(address[0],transcript))
                     if(ai_response):
                         res_bytes = ai_response.encode()
                         conn.send(res_bytes)
