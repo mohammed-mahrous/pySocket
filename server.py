@@ -93,7 +93,7 @@ class Server :
                 transcript:str = res.json()['transcript']
                 print('whisper transcript response to "{}" => {}'.format(address[0],transcript))
             
-                if(len(transcript) != 0 and transcript != None):
+                if(transcript != None and len(transcript) != 0):
                     resbytes = transcript.encode()
                     conn.send(resbytes)
                     time.sleep(0.5)
