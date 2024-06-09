@@ -103,9 +103,9 @@ class Server :
                     ai_response = aiService1.getApiResponseFromMessageAsText(transcript.strip())
                     ai_response2 = aiService2.getApiResponseFromMessageAsText(transcript.strip())
                     ai_response3 = aiService3.getApiResponseFromMessageAsText(transcript.strip())
-                    print('ai 1 response to "{}": {}'.format(address[0],ai_response))
-                    print('ai 2 response to "{}": {}'.format(address[0],ai_response2))
-                    print('ai 3 response to "{}": {}'.format(address[0],ai_response3))
+                    print('ai model 1 response to "{}": {}'.format(address[0],ai_response))
+                    print('ai model 2 response to "{}": {}'.format(address[0],ai_response2))
+                    print('ai model 3 response to "{}": {}'.format(address[0],ai_response3))
                     if(ai_response):
                         res_bytes = ai_response.encode()
                         conn.send(res_bytes)
