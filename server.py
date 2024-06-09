@@ -113,9 +113,7 @@ class Server :
                     if(ai_response):
                         res_bytes = self.coquiService.getAudioBytes(message=ai_response)
                         
-                        if(res_bytes):
-                            print('sening {} bytes'.format(len(res_bytes)))
-                            conn.send(res_bytes)
+                        conn.send(res_bytes) if res_bytes else print('no response from coqui')
         except Exception as e:
             print('err {}'.format(e))
         finally:            
