@@ -112,7 +112,9 @@ class Server :
                     # print('ai model 3 response to "{}": {}'.format(address[0],ai_response3))
                     if(ai_response):
                         res_bytes = self.coquiService.getAudioBytes(message=ai_response)
+                        
                         if(res_bytes):
+                            print('sening {} bytes'.format(len(res_bytes)))
                             conn.send(res_bytes)
         except Exception as e:
             print('err {}'.format(e))
