@@ -1,11 +1,14 @@
 import socket
-from RasaAiService import RasaAiService
+from RasaAiService import RasaAiService , AiType , AiModel
 import requests
 import time,os, base64 , threading
 from datetime import datetime
 from pydub import AudioSegment , playback
 import pyaudio
 from typing import IO , Any
+
+
+
 
 RASAHOST = '10.105.173.239'
 RASAPORT = 8080
@@ -15,13 +18,15 @@ WHISPERAIPORT = 5000
 CHANNELS = 1
 RATE = 16000
 
+
+
 class Server :
-    def __init__(self, host:str, port:int) -> None:
+    def __init__(self, host:str, port:int, model:AiModel) -> None:
         self.host = host
         self.port = port
         self.sock = socket.socket()
         self.serving = False
-        self.aiService = RasaAiService(host=RASAHOST,port=RASAPORT,authToken=RASAAUTHTOKEN)
+        self.aiService = RasaAiService(model=model,authToken=model.auth)
 
     def serve(self):
         try:
@@ -92,8 +97,15 @@ class Server :
                     resbytes = transcript.encode()
                     conn.send(resbytes)
                     time.sleep(0.5)
-                    ai_response = self.aiService.getApiResponseFromMessageAsText(transcript.strip())
-                    print('ai response to "{}": {}'.format(address[0],transcript))
+                    aiService1 = RasaAiService(model=AiModel(name='model 1', host=RASAHOST, port=8080,AuthToken=RASAAUTHTOKEN),)
+                    aiService2 = RasaAiService(model=AiModel(name='model 2', host=RASAHOST, port=8081,AuthToken=RASAAUTHTOKEN),)
+                    aiService3 = RasaAiService(model=AiModel(name='model 3', host=RASAHOST, port=8082,AuthToken=RASAAUTHTOKEN),)
+                    ai_response = aiService1.getApiResponseFromMessageAsText(transcript.strip())
+                    ai_response2 = aiService2.getApiResponseFromMessageAsText(transcript.strip())
+                    ai_response3 = aiService3.getApiResponseFromMessageAsText(transcript.strip())
+                    print('ai 1 response to "{}": {}'.format(address[0],ai_response))
+                    print('ai 2 response to "{}": {}'.format(address[0],ai_response2))
+                    print('ai 3 response to "{}": {}'.format(address[0],ai_response3))
                     if(ai_response):
                         res_bytes = ai_response.encode()
                         conn.send(res_bytes)
@@ -104,7 +116,17 @@ class Server :
             conn.close() # close the connection
 
 
+
+
+
 if __name__ == "__main__":
     HOST,PORT = 'localhost', 43007
-    server = Server(HOST,PORT)
+
+    models = [
+    AiModel(name='model 1', host=RASAHOST, port=8080, socketPort=43007, AuthToken=RASAAUTHTOKEN),
+    AiModel(name='model 2', host=RASAHOST, port=8081,socketPort=43008, AuthToken=RASAAUTHTOKEN),
+    AiModel(name='model 3', host=RASAHOST, port=8082,socketPort=43009, AuthToken=RASAAUTHTOKEN),
+    # AiModel(name='chat-gpt', host=RASAHOST, port=8083,socketPort=43006)
+    ]
+    server = Server(host=HOST, port= PORT, model= models[0])
     server.serve()

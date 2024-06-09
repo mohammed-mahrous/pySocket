@@ -1,23 +1,35 @@
-import requests
+import requests, enum
 HOST = 'localhost'
 PORT = 5005
 TOKEN = None
 CON_ID = 7
 
 
+class AiType(enum.Enum):
+    RASA = 'rasa'
+    CHATGPT = 'chatGPT'
+
+class AiModel:
+    def __init__(self, name:str , host:str , port:str, AuthToken:str) -> None:
+        self.name, self.host , self.port , self.auth = name , host , port, AuthToken 
+
+
 class RasaAiService:
-    def __init__(self, host:str=HOST, port:int=PORT, authToken:str=TOKEN, Conversation_Id:int=CON_ID) -> None:
-        self.host = host
-        self.port = port
-        self.authToken = authToken
+    def __init__(self, Conversation_Id:int=CON_ID, model:AiModel = AiModel('model 1', host=HOST , port=8080, AuthToken=TOKEN)) -> None:
+        self.model = model
+        self.__type = AiType.RASA if self.model != 'chat-gpt' else AiType.CHATGPT
+        self.authToken = self.model.auth
         self.Conversation_Id =  Conversation_Id
-        self.__baseUrl = f'http://{self.host}:{self.port}'
+        self.__baseUrl = f'http://{self.model.host}:{self.model.port}'
         self.__currentIntent = {}
         self.__allMessages:list[str] = []
         self.__currentMessage:str = None
         self.__params = {'token': self.authToken} if self.authToken else None
+        
 
     def checkServerStatus(self) -> bool:
+        if(self.__type == AiType.CHATGPT):
+            return False;
         endPoint = '/status'
         try:
             res = requests.get(self.__baseUrl+endPoint,params=self.__params)
@@ -29,6 +41,8 @@ class RasaAiService:
             return False
     
     def sendMessage(self,message:str) -> None:
+        if(self.__type == AiType.CHATGPT):
+            return;  
         endpoint = f'/conversations/{self.Conversation_Id}/messages'
         body = {
         'text':message,
@@ -48,6 +62,8 @@ class RasaAiService:
     
 
     def triggerIntent(self) -> None:
+        if(self.__type == AiType.CHATGPT):
+            return;
         endPoint = f'/conversations/{self.Conversation_Id}/trigger_intent'
         try:
             if(self.__currentIntent == None):
@@ -84,6 +100,8 @@ class RasaAiService:
 
     
     def getApiResponseFromMessageAsText(self, message:str) -> str:
+        if(self.__type == AiType.CHATGPT):
+            raise Exception('{} service is not emplimented yet'.format(self.__type));
         self.sendMessage(message)
         self.triggerIntent()
         return self.__currentMessage
