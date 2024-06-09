@@ -6,7 +6,10 @@ from datetime import datetime
 from pydub import AudioSegment , playback
 import pyaudio
 from typing import IO , Any
+from CoquiAiService import CoquiApiService
 
+COQUIHOST = '10.105.173.241'
+COUQIPORT = 5000
 
 
 
@@ -27,6 +30,7 @@ class Server :
         self.sock = socket.socket()
         self.serving = False
         self.aiService = RasaAiService(model=model)
+        self.coquiService = CoquiApiService(host=COQUIHOST,port=COUQIPORT)
 
     def serve(self):
         try:
@@ -94,9 +98,9 @@ class Server :
                 print('whisper transcript response to "{}" => {}'.format(address[0],transcript))
             
                 if(transcript != None and len(transcript) != 0):
-                    resbytes = transcript.encode()
-                    conn.send(resbytes)
-                    time.sleep(0.5)
+                    # resbytes = transcript.encode()
+                    # conn.send(resbytes)
+                    # time.sleep(0.5)
                     # aiService1 = RasaAiService(model=AiModel(name='model 1', host=RASAHOST, port=8080,AuthToken=RASAAUTHTOKEN),)
                     # aiService2 = RasaAiService(model=AiModel(name='model 2', host=RASAHOST, port=8081,AuthToken=RASAAUTHTOKEN),)
                     # aiService3 = RasaAiService(model=AiModel(name='model 3', host=RASAHOST, port=8082,AuthToken=RASAAUTHTOKEN),)
@@ -107,9 +111,9 @@ class Server :
                     # print('ai model 2 response to "{}": {}'.format(address[0],ai_response2))
                     # print('ai model 3 response to "{}": {}'.format(address[0],ai_response3))
                     if(ai_response):
-                        res_bytes = ai_response.encode()
-                        conn.send(res_bytes)
-                    time.sleep(0.5)
+                        res_bytes = self.coquiService.getAudioBytes(message=ai_response)
+                        if(res_bytes):
+                            conn.send(res_bytes)
         except Exception as e:
             print('err {}'.format(e))
         finally:            
