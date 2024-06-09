@@ -10,7 +10,7 @@ class AiType(enum.Enum):
     CHATGPT = 'chatGPT'
 
 class AiModel:
-    def __init__(self, name:str , host:str , port:str, AuthToken:str) -> None:
+    def __init__(self, name:str , host:str , port:int, AuthToken:str) -> None:
         self.name, self.host , self.port , self.auth = name , host , port, AuthToken 
 
 

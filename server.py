@@ -26,7 +26,7 @@ class Server :
         self.port = port
         self.sock = socket.socket()
         self.serving = False
-        self.aiService = RasaAiService(model=model,authToken=model.auth)
+        self.aiService = RasaAiService(model=model)
 
     def serve(self):
         try:
