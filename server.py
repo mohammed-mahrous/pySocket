@@ -123,9 +123,9 @@ if __name__ == "__main__":
     HOST,PORT = 'localhost', 43007
 
     models = [
-    AiModel(name='model 1', host=RASAHOST, port=8080, socketPort=43007, AuthToken=RASAAUTHTOKEN),
-    AiModel(name='model 2', host=RASAHOST, port=8081,socketPort=43008, AuthToken=RASAAUTHTOKEN),
-    AiModel(name='model 3', host=RASAHOST, port=8082,socketPort=43009, AuthToken=RASAAUTHTOKEN),
+    AiModel(name='model 1', host=RASAHOST, port=8080, AuthToken=RASAAUTHTOKEN),
+    AiModel(name='model 2', host=RASAHOST, port=8081, AuthToken=RASAAUTHTOKEN),
+    AiModel(name='model 3', host=RASAHOST, port=8082, AuthToken=RASAAUTHTOKEN),
     # AiModel(name='chat-gpt', host=RASAHOST, port=8083,socketPort=43006)
     ]
     server = Server(host=HOST, port= PORT, model= models[0])
