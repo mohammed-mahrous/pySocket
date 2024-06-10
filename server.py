@@ -9,6 +9,7 @@ from typing import IO , Any
 from CoquiAiService import CoquiApiService
 
 COQUIHOST = '10.105.173.241'
+TRANSFORMERSHOST = '10.105.173.89'
 COUQIPORT = 5000
 
 
@@ -30,7 +31,7 @@ class Server :
         self.sock = socket.socket()
         self.serving = False
         self.aiService = RasaAiService(model=model)
-        self.coquiService = CoquiApiService(host=COQUIHOST,port=COUQIPORT)
+        self.coquiService = CoquiApiService(host=TRANSFORMERSHOST,port=COUQIPORT)
 
     def serve(self):
         try:
