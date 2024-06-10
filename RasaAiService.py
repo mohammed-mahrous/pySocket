@@ -14,7 +14,7 @@ class AiModel:
         self.name, self.host , self.port , self.auth = name , host , port, AuthToken 
     
     def getServerAddress(self) -> tuple[str , int]:
-        (HOST,43007) if self.name == 'Rasa model 1' else (HOST,43008) if self.name == 'Rasa model 2' else (HOST,43009)
+       return (HOST,43007) if self.name == 'Rasa model 1' else (HOST,43008) if self.name == 'Rasa model 2' else (HOST,43009)
 
     @staticmethod
     def getAllModels():
