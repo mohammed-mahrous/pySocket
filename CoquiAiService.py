@@ -1,5 +1,5 @@
 import requests
-HOST = '10.105.173.241'
+HOST = '10.105.173.89'
 PORT = 5000
 
 
