@@ -125,11 +125,10 @@ class Server :
 if __name__ == "__main__":
     HOST,PORT = 'localhost', 43007
 
-    models = [
-    AiModel(name='model 1', host=RASAHOST, port=8080, AuthToken=RASAAUTHTOKEN),
-    AiModel(name='model 2', host=RASAHOST, port=8081, AuthToken=RASAAUTHTOKEN),
-    AiModel(name='model 3', host=RASAHOST, port=8082, AuthToken=RASAAUTHTOKEN),
-    # AiModel(name='chat-gpt', host=RASAHOST, port=8083,socketPort=43006)
-    ]
-    server = Server(host=HOST, port= PORT, model= models[0])
-    server.serve()
+    for model in AiModel.getAllModels():
+        serverHost, ServerPort = model.getServerAddress()
+        server = Server(host=serverHost,port=ServerPort,model=model)
+        t = threading.Thread(target=server.serve, name='{} socket thread'.format(model.name))
+        t.start()
+    # server = Server(host=HOST, port= PORT, model= AiModel.getAllModels()[0])
+    # server.serve()
