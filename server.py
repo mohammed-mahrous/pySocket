@@ -1,28 +1,19 @@
 import socket
-from RasaAiService import RasaAiService , AiType , AiModel
+from RasaAiService import RasaAiService , AiModel
 import requests
-import time,os, base64 , threading
+import time,os , threading
 from datetime import datetime
-from pydub import AudioSegment , playback
-import pyaudio
-from typing import IO , Any
-from CoquiAiService import CoquiApiService
-
-COQUIHOST = '10.105.173.241'
-TRANSFORMERSHOST = '10.105.173.89'
-COUQIPORT = 5000
+from pydub import AudioSegment 
+from TTSServiceCoqui import CoquiApiService
+from TTSServiceTransformers import TransformersApiService
 
 
-
-RASAHOST = '10.105.173.239'
-RASAPORT = 8080
-RASAAUTHTOKEN = 'mysecrettoken'
 WHISPERAIHOST = '10.105.173.63'
 WHISPERAIPORT = 5000
 CHANNELS = 1
 RATE = 16000
 
-useCoqui:bool = True
+useCoqui:bool = False
 
 
 
@@ -33,8 +24,7 @@ class Server :
         self.sock = socket.socket()
         self.serving = False
         self.aiService = RasaAiService(model=model)
-        self.coquiService = CoquiApiService(host=COQUIHOST,port=COUQIPORT)
-        self.transformersService = CoquiApiService(host=COQUIHOST,port=COUQIPORT)
+        self.ttsService = TransformersApiService()
 
     def serve(self):
         try:
@@ -115,7 +105,7 @@ class Server :
                     # print('ai model 2 response to "{}": {}'.format(address[0],ai_response2))
                     # print('ai model 3 response to "{}": {}'.format(address[0],ai_response3))
                     if(ai_response):
-                        res_bytes = self.coquiService.getAudioBytes(message=ai_response) if useCoqui else self.transformersService.getAudioBytes(message=ai_response)
+                        res_bytes = self.ttsService.getAudioBytes(message=ai_response)
                         conn.send(res_bytes) if res_bytes else print('no response from coqui')
         except Exception as e:
             print('err {}'.format(e))

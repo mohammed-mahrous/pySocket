@@ -4,6 +4,8 @@ PORT = 5005
 TOKEN = None
 CON_ID = 7
 
+GPTAPIKEY = 'sk-nilecrm-ai-service-VE6DyKAoVVUfnfFYyWwuT3BlbkFJfngKDGNHbMOJkHkzRnvT'
+
 
 class AiType(enum.Enum):
     RASA = 'rasa'
