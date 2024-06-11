@@ -22,6 +22,8 @@ WHISPERAIPORT = 5000
 CHANNELS = 1
 RATE = 16000
 
+useCoqui:bool = True
+
 
 
 class Server :
@@ -31,7 +33,8 @@ class Server :
         self.sock = socket.socket()
         self.serving = False
         self.aiService = RasaAiService(model=model)
-        self.coquiService = CoquiApiService(host=TRANSFORMERSHOST,port=COUQIPORT)
+        self.coquiService = CoquiApiService(host=COQUIHOST,port=COUQIPORT)
+        self.transformersService = CoquiApiService(host=COQUIHOST,port=COUQIPORT)
 
     def serve(self):
         try:
@@ -112,7 +115,7 @@ class Server :
                     # print('ai model 2 response to "{}": {}'.format(address[0],ai_response2))
                     # print('ai model 3 response to "{}": {}'.format(address[0],ai_response3))
                     if(ai_response):
-                        res_bytes = self.coquiService.getAudioBytes(message=ai_response)
+                        res_bytes = self.coquiService.getAudioBytes(message=ai_response) if useCoqui else self.transformersService.getAudioBytes(message=ai_response)
                         conn.send(res_bytes) if res_bytes else print('no response from coqui')
         except Exception as e:
             print('err {}'.format(e))
