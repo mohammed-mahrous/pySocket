@@ -12,8 +12,8 @@ class AiType(enum.Enum):
     CHATGPT = 'chatGPT'
 
 class AiModel:
-    def __init__(self, name:str , host:str , port:int, AuthToken:str) -> None:
-        self.name, self.host , self.port , self.auth = name , host , port, AuthToken 
+    def __init__(self, name:str , host:str , port:int, AuthToken:str, useFB=False) -> None:
+        self.name, self.host , self.port , self.auth, self.isFB = name , host , port, AuthToken, useFB
     
     def getServerAddress(self) -> tuple[str , int]:
        return (HOST,43007) if self.name == 'Rasa model 1' else (HOST,43008) if self.name == 'Rasa model 2' else (HOST,43009)
@@ -22,7 +22,7 @@ class AiModel:
     def getAllModels():
         models:list[AiModel] = [
     AiModel(name='Rasa model 1', host='10.105.173.239', port=8080, AuthToken='mysecrettoken'),
-    AiModel(name='Rasa model 2', host='10.105.173.239', port=8081, AuthToken='mysecrettoken'),
+    AiModel(name='Rasa model 2', host='10.105.173.239', port=8081, AuthToken='mysecrettoken', useFB=True),
     AiModel(name='Rasa model 3', host='10.105.173.239', port=8082, AuthToken='mysecrettoken'),
         ]
         return models

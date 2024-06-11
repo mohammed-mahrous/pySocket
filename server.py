@@ -24,7 +24,8 @@ class Server :
         self.sock = socket.socket()
         self.serving = False
         self.aiService = RasaAiService(model=model)
-        self.ttsService = TransformersApiService()
+        self.ttsService = CoquiApiService()
+        if model.isFB : self.ttsService = TransformersApiService()
 
     def serve(self):
         try:
