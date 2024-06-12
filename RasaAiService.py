@@ -1,5 +1,5 @@
 import requests
-from AIModel import AiModel
+from AIModel import AiModel, AiType
 HOST = 'localhost'
 PORT = 5005
 TOKEN = None
@@ -7,7 +7,7 @@ CON_ID = 7
 
 
 class RasaAiService:
-    def __init__(self, Conversation_Id:int=CON_ID, model:AiModel = AiModel('model 1', host=HOST , port=8080, AuthToken=TOKEN)) -> None:
+    def __init__(self, Conversation_Id:int=CON_ID, model:AiModel = AiModel('model 1', host=HOST , port=8080, AuthToken=TOKEN ,type=AiType.RASA)) -> None:
         self.model = model
         self.authToken = self.model.auth
         self.Conversation_Id =  Conversation_Id
