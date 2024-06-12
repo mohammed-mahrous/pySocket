@@ -1,11 +1,13 @@
 from openai import OpenAI
 from open_ai_env import APIKEY
+from AIModel import AiModel
 
 client = OpenAI(api_key=APIKEY)
 
 class ChatGPTAiService:
-    def __init__(self) -> None:
-        pass
+    def __init__(self, model:AiModel) -> None:
+        self.model = model
+
 
     def showModels(self) -> str:
         models = client.models.list()

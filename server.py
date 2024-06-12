@@ -26,7 +26,7 @@ class Server :
         self.sock = socket.socket()
         self.serving = False
         self.sttService = STTServiceFasterWhisper()
-        self.aiService = RasaAiService(model=model) if model.type == AiType.RASA else ChatGPTAiService()
+        self.aiService = RasaAiService(model=model) if model.type == AiType.RASA else ChatGPTAiService(model=model)
         self.ttsService = TransformersApiService()
 
     def serve(self):
