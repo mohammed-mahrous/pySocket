@@ -1,5 +1,6 @@
 import enum
-from RasaAiService import HOST
+
+HOST = 'localhost'
 
 class AiType(enum.Enum):
     RASA = 'rasa'
