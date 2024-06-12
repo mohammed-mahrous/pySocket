@@ -1,12 +1,14 @@
 import socket
-from RasaAiService import RasaAiService , AiModel
+from RasaAiService import RasaAiService
+from ChatGPTAiService import ChatGPTAiService
+from AIModel import AiModel , AiType
 import requests
-import time,os , threading
+import time,os , threading, tempfile
 from datetime import datetime
 from pydub import AudioSegment 
 from TTSServiceCoqui import CoquiApiService
 from TTSServiceTransformers import TransformersApiService
-
+from STTServiceFasterWhisper import STTServiceFasterWhisper
 
 WHISPERAIHOST = '10.105.173.63'
 WHISPERAIPORT = 5000
@@ -23,9 +25,9 @@ class Server :
         self.port = port
         self.sock = socket.socket()
         self.serving = False
-        self.aiService = RasaAiService(model=model)
-        self.ttsService = CoquiApiService()
-        if model.isFB : self.ttsService = TransformersApiService()
+        self.sttService = STTServiceFasterWhisper()
+        self.aiService = RasaAiService(model=model) if model.type == AiType.RASA else ChatGPTAiService()
+        self.ttsService = TransformersApiService()
 
     def serve(self):
         try:
@@ -56,10 +58,7 @@ class Server :
         sample_width = 2 if dataLen % (CHANNELS * 2) == 0 else 4 if dataLen % (CHANNELS * 4) == 0 else 1
         audio = AudioSegment(data,channels=CHANNELS, frame_rate=RATE,sample_width=sample_width)
         exportData = audio.export(out_f='temp-audio-{}-{}.wav'.format(id.replace('.',''), self.__getDateTimeFormatted()),format='wav')
-        with open(exportData.name,'rb') as wav_file:
-                res = requests.post(f'http://{WHISPERAIHOST}:{WHISPERAIPORT}/transcript', files={'wav-file': wav_file.read()})
-        exportData.close()
-        os.remove(exportData.name)
+        res = self.sttService.transcriptFromFile(exportData)
         return res
 
     def __handleConnection(self):
