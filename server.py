@@ -95,7 +95,7 @@ class Server :
 
                 if(transcript.strip() == "اشتركوا في القناة"):
                     print('whisper recived no transcripeable audio')
-                    break
+                    # break
 
                 if(transcript != None and len(transcript) != 0 and transcript.strip() != "اشتركوا في القناة"):
                     # resbytes = transcript.encode()
