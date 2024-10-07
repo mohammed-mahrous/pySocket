@@ -112,9 +112,17 @@ class Server :
                     # print('ai model 3 response to "{}": {}'.format(address[0],ai_response3))
                     if(ai_response):
                         res_bytes = self.ttsService.getAudioBytes(message=ai_response)
-                        conn.sendall(res_bytes) if res_bytes else print('no response from coqui')
+                        if(res_bytes):
+                            totalsent = 0
+                            while totalsent < res_bytes.__len__():
+                                sent = conn.send(res_bytes[totalsent:])
+                                if sent == 0:
+                                    raise RuntimeError("socket connection broken")
+                                totalsent = totalsent + sent
+                        
+                        # conn.sendall(res_bytes) if res_bytes else print('no response from coqui')
                         time.sleep(2)
-                        conn.send(bytes("stopped","utf-8"))
+                        conn.sendall(bytes("stopped","utf-8"))
         except Exception as e:
             print('err {}'.format(e))
         finally:            
