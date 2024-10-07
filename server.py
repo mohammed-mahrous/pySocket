@@ -112,8 +112,9 @@ class Server :
                     # print('ai model 3 response to "{}": {}'.format(address[0],ai_response3))
                     if(ai_response):
                         res_bytes = self.ttsService.getAudioBytes(message=ai_response)
-                        conn.send(res_bytes) if res_bytes else print('no response from coqui')
-                        conn.send(bytes("stopped", "utf-8"))
+                        conn.sendall(res_bytes) if res_bytes else print('no response from coqui')
+                        time.sleep(2)
+                        conn.send("stopped")
         except Exception as e:
             print('err {}'.format(e))
         finally:            
