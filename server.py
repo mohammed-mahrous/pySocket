@@ -83,6 +83,8 @@ class Server :
                 if not data:
                     conn.send('no data'.encode())
                     break
+                else: print(f"data recived {data.__len__()}")
+
                 res = self._handleAudioBytes(data,address[0])
 
                 if(res.status_code != 200):
