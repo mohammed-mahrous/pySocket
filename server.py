@@ -92,12 +92,12 @@ class Server :
                     break
                 transcript:str = res.json()['transcript']
                 print('whisper transcript response to "{}" => {}'.format(address[0],transcript))
-
-                if(transcript.strip() == "اشتركوا في القناة"):
+                empty_script:bool =  transcript.strip() == "ترجمة نانسي قنقر" or transcript.strip() == "اشتركوا في القناة"
+                if(empty_script):
                     print('whisper recived no transcripeable audio')
                     # break
 
-                if(transcript != None and len(transcript) != 0 and transcript.strip() != "اشتركوا في القناة"):
+                if(transcript != None and len(transcript) != 0 and not empty_script):
                     # resbytes = transcript.encode()
                     # conn.send(resbytes)
                     # time.sleep(0.5)
