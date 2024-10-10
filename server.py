@@ -67,6 +67,14 @@ class Server :
         thread = threading.Thread(target=self.__handleClient, args=(conn,address))
         thread.start()
         # self.__handleClient(conn=conn,address=address)
+    def _sendData(self , msg:bytes, conn: socket) -> None:
+        if(msg):
+            totalsent = 0
+            while totalsent < msg.__len__():
+                sent = conn.send(msg[totalsent:])
+                if sent == 0:
+                    raise RuntimeError("socket connection broken")
+                totalsent = totalsent + sent
 
     def __handleClient(self, conn:socket.socket, address):
         try:
@@ -105,20 +113,15 @@ class Server :
                     # aiService2 = RasaAiService(model=AiModel(name='model 2', host=RASAHOST, port=8081,AuthToken=RASAAUTHTOKEN),)
                     # aiService3 = RasaAiService(model=AiModel(name='model 3', host=RASAHOST, port=8082,AuthToken=RASAAUTHTOKEN),)
                     ai_response = self.aiService.getApiResponseFromMessageAsText(transcript.strip())
+                    print(f"ai res len -> {ai_response.__len__()}")
                     # ai_response2 = aiService2.getApiResponseFromMessageAsText(transcript.strip())
                     # ai_response3 = aiService3.getApiResponseFromMessageAsText(transcript.strip())
                     print('ai model {} response to "{}": {}'.format(self.aiService.model.name,address[0],ai_response))
                     # print('ai model 2 response to "{}": {}'.format(address[0],ai_response2))
                     # print('ai model 3 response to "{}": {}'.format(address[0],ai_response3))
                     if(ai_response):
-                        res_bytes = self.ttsService.getAudioBytes(message=ai_response)
-                        if(res_bytes):
-                            totalsent = 0
-                            while totalsent < res_bytes.__len__():
-                                sent = conn.send(res_bytes[totalsent:])
-                                if sent == 0:
-                                    raise RuntimeError("socket connection broken")
-                                totalsent = totalsent + sent
+                        msg = self.ttsService.getAudioBytes(message=ai_response)
+                        self._sendData(msg, conn)
                         
                         # conn.sendall(res_bytes) if res_bytes else print('no response from coqui')
                         time.sleep(2)
@@ -128,7 +131,7 @@ class Server :
         finally:            
             conn.close() # close the connection
 
-
+    
 
 
 
