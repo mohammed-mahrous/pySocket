@@ -79,7 +79,7 @@ class Server :
     def __handleClient(self, conn:socket.socket, address):
         try:
             while True:
-                end_time = time.time() + 5;
+                end_time = time.time() + 2;
                 # receive data stream. it won't accept data packet greater than 1024 bytes
                 data = None
                 while time.time() < end_time:
