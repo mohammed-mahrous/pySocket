@@ -14,7 +14,7 @@ WHISPERAIHOST = '10.105.173.63'
 WHISPERAIPORT = 5000
 CHANNELS = 1
 RATE = 16000
-
+SECONDS_AFTER_LOOP = 4
 useCoqui:bool = False
 
 
@@ -46,7 +46,9 @@ class Server :
             self.sock.close()    
             self.serving = False
 
-
+    def _getEndTime(self) -> float:
+        return time.time() + SECONDS_AFTER_LOOP
+    
     def __getDateTimeFormatted(self) -> str:
         now = datetime.now()
         formatted = '{}-{}-{}-{}-{}'.format(now.day,now.hour,now.minute,now.second,now.microsecond)
@@ -79,7 +81,7 @@ class Server :
     def __handleClient(self, conn:socket.socket, address):
         try:
             while True:
-                end_time = time.time() + 2;
+                end_time = self._getEndTime()
                 # receive data stream. it won't accept data packet greater than 1024 bytes
                 data = None
                 while time.time() < end_time:
