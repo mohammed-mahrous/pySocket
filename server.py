@@ -84,15 +84,15 @@ class Server :
         try:
             while True:
                 end_time = self._getEndTime()
-                recived_bytes = conn.recv(100000 * 2)
-                print(f"recieved {len(recived_bytes)}")
+                # recived_bytes = conn.recv(100000 * 2)
+                print(f"recieved {len(conn.recv(100000 * 2))}")
                 # receive data stream. it won't accept data packet greater than 1024 bytes
                 data = None
-                while recived_bytes:
+                while conn.recv(100000 * 2):
                     if(data):
-                        data+= recived_bytes
+                        data+= conn.recv(100000 * 2)
                     else:
-                        data = recived_bytes
+                        data = conn.recv(100000 * 2)
 
                 if not data:
                     conn.send('no data'.encode())
