@@ -71,8 +71,10 @@ class Server :
         # self.__handleClient(conn=conn,address=address)
     def _sendData(self , msg:bytes, conn: socket) -> None:
         if(msg):
+            MSGLEN = msg.__len__()
+            print(f"msg len -> {MSGLEN}")
             totalsent = 0
-            while totalsent < msg.__len__():
+            while totalsent < MSGLEN:
                 sent = conn.send(msg[totalsent:])
                 if sent == 0:
                     raise RuntimeError("socket connection broken")
