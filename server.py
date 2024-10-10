@@ -88,11 +88,11 @@ class Server :
                 print(f"recieved {len(recived_bytes)}")
                 # receive data stream. it won't accept data packet greater than 1024 bytes
                 data = None
-                while time.time() < end_time:
+                while recived_bytes:
                     if(data):
-                        data+= conn.recv(100000 * 2)
+                        data+= recived_bytes
                     else:
-                        data = conn.recv(100000 * 2)
+                        data = recived_bytes
 
                 if not data:
                     conn.send('no data'.encode())
