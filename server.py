@@ -117,6 +117,7 @@ class Server :
                     ai_response = self.aiService.getApiResponseFromMessageAsText(transcript.strip())
                     if(ai_response):
                         print(f"ai res len -> {len(ai_response)}")
+                        print(f"ai res -> {ai_response}")
                     
                     # ai_response2 = aiService2.getApiResponseFromMessageAsText(transcript.strip())
                     # ai_response3 = aiService3.getApiResponseFromMessageAsText(transcript.strip())
