@@ -69,7 +69,7 @@ class Server :
         thread = threading.Thread(target=self.__handleClient, args=(conn,address))
         thread.start()
         # self.__handleClient(conn=conn,address=address)
-    def _sendData(self , msg:bytes, conn: socket) -> None:
+    def _sendData(self , msg:bytes, conn: socket.socket) -> None:
         if(msg):
             MSGLEN = msg.__len__()
             print(f"msg len -> {MSGLEN}")
