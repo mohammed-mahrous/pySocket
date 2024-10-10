@@ -88,7 +88,7 @@ class Server :
                 print(f"recieved {len(conn.recv(100000 * 2))}")
                 # receive data stream. it won't accept data packet greater than 1024 bytes
                 data = None
-                while conn.recv(100000 * 2):
+                while len(conn.recv(100000 * 2)) > 0:
                     if(data):
                         data+= conn.recv(100000 * 2)
                     else:
