@@ -113,7 +113,9 @@ class Server :
                     # aiService2 = RasaAiService(model=AiModel(name='model 2', host=RASAHOST, port=8081,AuthToken=RASAAUTHTOKEN),)
                     # aiService3 = RasaAiService(model=AiModel(name='model 3', host=RASAHOST, port=8082,AuthToken=RASAAUTHTOKEN),)
                     ai_response = self.aiService.getApiResponseFromMessageAsText(transcript.strip())
-                    print(f"ai res len -> {len(ai_response)}")
+                    if(ai_response):
+                        print(f"ai res len -> {len(ai_response)}")
+                    
                     # ai_response2 = aiService2.getApiResponseFromMessageAsText(transcript.strip())
                     # ai_response3 = aiService3.getApiResponseFromMessageAsText(transcript.strip())
                     print('ai model {} response to "{}": {}'.format(self.aiService.model.name,address[0],ai_response))
