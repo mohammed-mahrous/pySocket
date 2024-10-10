@@ -84,6 +84,8 @@ class Server :
         try:
             while True:
                 end_time = self._getEndTime()
+                recived_bytes = conn.recv(100000 * 2)
+                print(f"recieved {len(recived_bytes)}")
                 # receive data stream. it won't accept data packet greater than 1024 bytes
                 data = None
                 while time.time() < end_time:
