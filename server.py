@@ -31,12 +31,8 @@ class Server :
 
     def serve(self):
         try:
-            print(f"trying to bind socket to host:{self.host} , port:{self.port}")
             self.sock.bind((self.host,self.port))
-            print("bind successful")
-            print('trying to listen to socket')
             self.sock.listen()
-            print('succssfully listening')
             self.serving = True
             while True:
                 self.__handleConnection()
@@ -58,7 +54,6 @@ class Server :
         return formatted
 
     def _handleAudioBytes(self, data:bytes, id:str) -> requests.Response:
-        # pass
         dataLen = len(data)
         sample_width = 2 if dataLen % (CHANNELS * 2) == 0 else 4 if dataLen % (CHANNELS * 4) == 0 else 1
         audio = AudioSegment(data,channels=CHANNELS, frame_rate=RATE,sample_width=sample_width)
@@ -70,9 +65,7 @@ class Server :
         conn , address = self.sock.accept()
         print("Connection from: " + str(address))
         thread = threading.Thread(target=self.__handleClient, args=(conn,address))
-        print(f"threaing connection to {thread.name}")
         thread.start()
-        # self.__handleClient(conn=conn,address=address)
     def _sendData(self , msg:bytes, conn: socket.socket) -> None:
         if(msg):
             MSGLEN = msg.__len__()
@@ -88,14 +81,9 @@ class Server :
         try:
             print(f'handeling client {address[0]}')
             while True:
-                print('start handling loop')
                 end_time = self._getEndTime()
-                print(f"end time : {end_time}")
-                # receive data stream. it won't accept data packet greater than 1024 bytes
                 data = None
                 while time.time() < end_time:
-                    print(f"time {time.time()}")
-                    print(f"end time : {end_time}")
                     if(data):
                         data+= conn.recv(100000 * 2)
                     else:
@@ -116,30 +104,13 @@ class Server :
                 empty_script:bool =  transcript.strip() == "ترجمة نانسي قنقر" or transcript.strip() == "اشتركوا في القناة"
                 if(empty_script):
                     print('whisper recived no transcripeable audio')
-                    # break
 
                 if(transcript != None and len(transcript) != 0 and not empty_script):
-                    # resbytes = transcript.encode()
-                    # conn.send(resbytes)
-                    # time.sleep(0.5)
-                    # aiService1 = RasaAiService(model=AiModel(name='model 1', host=RASAHOST, port=8080,AuthToken=RASAAUTHTOKEN),)
-                    # aiService2 = RasaAiService(model=AiModel(name='model 2', host=RASAHOST, port=8081,AuthToken=RASAAUTHTOKEN),)
-                    # aiService3 = RasaAiService(model=AiModel(name='model 3', host=RASAHOST, port=8082,AuthToken=RASAAUTHTOKEN),)
                     ai_response = self.aiService.getApiResponseFromMessageAsText(transcript.strip())
-                    # if(ai_response):
-                    #     print(f"ai res len -> {len(ai_response)}")
-                    #     print(f"ai res -> {ai_response}")
-                    
-                    # ai_response2 = aiService2.getApiResponseFromMessageAsText(transcript.strip())
-                    # ai_response3 = aiService3.getApiResponseFromMessageAsText(transcript.strip())
                     print('ai model {} response to "{}": {}'.format(self.aiService.model.name,address[0],ai_response))
-                    # print('ai model 2 response to "{}": {}'.format(address[0],ai_response2))
-                    # print('ai model 3 response to "{}": {}'.format(address[0],ai_response3))
                     if(ai_response):
                         msg = self.ttsService.getAudioBytes(message=ai_response)
                         self._sendData(msg, conn)
-                        
-                        # conn.sendall(res_bytes) if res_bytes else print('no response from coqui')
                         time.sleep(2)
                         conn.sendall(bytes("stopped","utf-8"))
         except Exception as e:
