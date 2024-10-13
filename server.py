@@ -93,7 +93,7 @@ class Server :
                 print(f"end time : {end_time}")
                 # receive data stream. it won't accept data packet greater than 1024 bytes
                 data = None
-                while time.time() > end_time:
+                while time.time() < end_time:
                     print(f"time {time.time()}")
                     print(f"end time : {end_time}")
                     if(data):
