@@ -31,9 +31,12 @@ class Server :
 
     def serve(self):
         try:
-
+            print(f"trying to bind socket to host:{self.host} , port:{self.port}")
             self.sock.bind((self.host,self.port))
+            print("bind successful")
+            print('trying to listen to socket')
             self.sock.listen()
+            print('succssfully listening')
             self.serving = True
             while True:
                 self.__handleConnection()
@@ -67,6 +70,7 @@ class Server :
         conn , address = self.sock.accept()
         print("Connection from: " + str(address))
         thread = threading.Thread(target=self.__handleClient, args=(conn,address))
+        print(f"threaing connection to {thread.name}")
         thread.start()
         # self.__handleClient(conn=conn,address=address)
     def _sendData(self , msg:bytes, conn: socket.socket) -> None:
@@ -82,12 +86,16 @@ class Server :
 
     def __handleClient(self, conn:socket.socket, address):
         try:
+            print(f'handeling client {address[0]}')
             while True:
+                print('start handling loop')
                 end_time = self._getEndTime()
+                print(f"end time : {end_time}")
                 # receive data stream. it won't accept data packet greater than 1024 bytes
                 data = None
                 while time.time() > end_time:
-                    print(f"recieved {len(conn.recv(100000 * 2))}")
+                    print(f"time {time.time()}")
+                    print(f"end time : {end_time}")
                     if(data):
                         data+= conn.recv(100000 * 2)
                     else:
