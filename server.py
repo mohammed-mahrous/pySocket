@@ -84,8 +84,6 @@ class Server :
         try:
             while True:
                 end_time = self._getEndTime()
-                # recived_bytes = conn.recv(100000 * 2)
-                print(f"recieved {len(conn.recv(100000 * 2))}")
                 # receive data stream. it won't accept data packet greater than 1024 bytes
                 data = None
                 while time.time() > end_time:
@@ -126,7 +124,7 @@ class Server :
                     
                     # ai_response2 = aiService2.getApiResponseFromMessageAsText(transcript.strip())
                     # ai_response3 = aiService3.getApiResponseFromMessageAsText(transcript.strip())
-                    # print('ai model {} response to "{}": {}'.format(self.aiService.model.name,address[0],ai_response))
+                    print('ai model {} response to "{}": {}'.format(self.aiService.model.name,address[0],ai_response))
                     # print('ai model 2 response to "{}": {}'.format(address[0],ai_response2))
                     # print('ai model 3 response to "{}": {}'.format(address[0],ai_response3))
                     if(ai_response):
