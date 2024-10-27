@@ -113,6 +113,7 @@ class Server :
                     if(ai_response):
                         msg = self.ttsService.getAudioBytes(message=ai_response)
                         self._sendData(msg, conn)
+                        print(f"data send - {msg.__len__()}")
                         time.sleep(2)
                         conn.sendall(bytes("stopped","utf-8"))
         except Exception as e:
