@@ -84,11 +84,7 @@ class Server :
                 end_time = self._getEndTime()
                 data = None
                 while time.time() < end_time:
-                    conn.settimeout(2)
-                    try:
-                        recieved: bytes = conn.recv(100000 * 2)
-                    except Exception as e:
-                        print(e)
+                    recieved: bytes = conn.recv(100000 * 2)
                     print(f'recieved {recieved.__len__()}')
                     if(data):
                         data+= recieved
