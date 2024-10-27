@@ -84,13 +84,17 @@ class Server :
                 end_time = self._getEndTime()
                 data = None
                 while time.time() < end_time:
-                    recieved: bytes = conn.recv(100000 * 2)
-                    print(f'recieved {recieved.__len__()}')
-                    if(data):
-                        data+= recieved
-                    else:
-                        data = recieved
-
+                    try:
+                        conn.settimeout(5.0)
+                        recieved: bytes = conn.recv(100000 * 2)
+                        conn.settimeout(None)
+                        print(f'recieved {recieved.__len__()}')
+                        if(data):
+                            data+= recieved
+                        else:
+                            data = recieved
+                    except socket.timeout as e:
+                        print(e)
                 if not data:
                     conn.send('no data'.encode())
                     break
