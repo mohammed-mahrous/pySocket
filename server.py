@@ -87,7 +87,7 @@ class Server :
                     conn.settimeout(2)
                     try:
                         recieved: bytes = conn.recv(100000 * 2)
-                    except e :
+                    except Exception as e:
                         print(e)
                     print(f'recieved {recieved.__len__()}')
                     if(data):
