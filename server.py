@@ -33,6 +33,7 @@ class Server :
         try:
             self.sock.bind((self.host,self.port))
             self.sock.listen()
+            self.sock.settimeout(2)
             self.serving = True
             while True:
                 self.__handleConnection()
@@ -84,7 +85,10 @@ class Server :
                 end_time = self._getEndTime()
                 data = None
                 while time.time() < end_time:
-                    recieved: bytes = conn.recv(100000 * 2)
+                    try:
+                        recieved: bytes = conn.recv(100000 * 2)
+                    except e :
+                        print(e)
                     print(f'recieved {recieved.__len__()}')
                     if(data):
                         data+= recieved
