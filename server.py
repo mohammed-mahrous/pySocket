@@ -84,10 +84,12 @@ class Server :
                 end_time = self._getEndTime()
                 data = None
                 while time.time() < end_time:
+                    recieved: bytes = conn.recv(100000 * 2)
+                    print(f'recieved {recieved.__len__()}')
                     if(data):
-                        data+= conn.recv(100000 * 2)
+                        data+= recieved
                     else:
-                        data = conn.recv(100000 * 2)
+                        data = recieved
 
                 if not data:
                     conn.send('no data'.encode())
