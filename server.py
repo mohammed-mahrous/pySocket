@@ -60,7 +60,16 @@ class Server :
         exportData = audio.export(out_f='temp-audio-{}-{}.wav'.format(id.replace('.',''), self.__getDateTimeFormatted()),format='wav')
         res = self.sttService.transcriptFromFile(exportData)
         return res
-
+    def _recvData(self, conn:socket.socket,):
+        data = None
+        try:
+            conn.settimeout(5.0)
+            data = conn.recv(100000 * 2)
+            conn.settimeout(None)
+        except socket.timeout as e:
+            print(e)
+        finally:
+            return data;
     def __handleConnection(self):
         conn , address = self.sock.accept()
         print("Connection from: " + str(address))
@@ -84,17 +93,12 @@ class Server :
                 end_time = self._getEndTime()
                 data = None
                 while time.time() < end_time:
-                    try:
-                        conn.settimeout(5.0)
-                        recieved: bytes = conn.recv(100000 * 2)
-                        conn.settimeout(None)
-                        print(f'recieved {recieved.__len__()}')
+                    recieved = self._recvData(conn)
+                    if(recieved):
                         if(data):
                             data+= recieved
                         else:
                             data = recieved
-                    except socket.timeout as e:
-                        print(e)
                 if not data:
                     conn.send('no data'.encode())
                     break
