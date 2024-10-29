@@ -119,6 +119,9 @@ class Server :
                             data+= recieved
                         else:
                             data = recieved
+                    else:
+                        print('no data yet')
+                        continue
                 if not data:
                     conn.send('no data'.encode())
                     break
