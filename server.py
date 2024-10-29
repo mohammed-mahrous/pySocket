@@ -67,10 +67,12 @@ class Server :
         try:
             conn.settimeout(5.0)
             data = conn.recv(100000 * 2)
-            conn.settimeout(None)
         except socket.timeout as e:
             print(e)
+        except Exception as e:
+            print(e)
         finally:
+            conn.settimeout(None)
             return data;
 
 
