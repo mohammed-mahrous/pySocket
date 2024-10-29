@@ -62,6 +62,20 @@ class Server :
         return res
     
 
+    def __is_socket_closed(self,conn: socket.socket) -> bool:
+        try:
+            # this will try to read bytes without blocking and also without removing them from buffer (peek only)
+            data = sock.recv(16, socket.MSG_DONTWAIT | socket.MSG_PEEK)
+            if len(data) == 0:
+                return True
+        except BlockingIOError:
+            return False  # socket is open and reading from it would block
+        except ConnectionResetError:
+            return True  # socket was closed for some other reason
+        except Exception as e:
+            return False
+        return False
+
     def _recvData(self, conn:socket.socket,):
         data = None
         try:
@@ -108,6 +122,9 @@ class Server :
         try:
             print(f'handeling client {address[0]}')
             while True:
+                isClosed: bool = self.__is_socket_closed(conn)
+                if(isClosed):
+                    break
                 print(f'starting data while loop')
                 end_time = self._getEndTime()
                 data = None
