@@ -65,7 +65,7 @@ class Server :
     def __is_socket_closed(self,conn: socket.socket) -> bool:
         try:
             # this will try to read bytes without blocking and also without removing them from buffer (peek only)
-            data = sock.recv(16, socket.MSG_DONTWAIT | socket.MSG_PEEK)
+            data = conn.recv(16, socket.MSG_DONTWAIT | socket.MSG_PEEK)
             if len(data) == 0:
                 return True
         except BlockingIOError:
@@ -129,8 +129,7 @@ class Server :
                 end_time = self._getEndTime()
                 data = None
                 while time.time() < end_time:
-                    isClosed: bool = self.__is_socket_closed(conn)
-                    if(isClosed):
+                    if self.__is_socket_closed(conn):
                         break
                     recieved = self._recvData(conn)
                     if(recieved):
