@@ -17,7 +17,8 @@ SECONDS_AFTER_LOOP = 4
 
 
 class Server :
-    def __init__(self, host:str, port:int, model:AiModel, useCoqui:bool = False) -> None:
+    def __init__(self, host:str, port:int, model:AiModel, useCoqui:bool = False, debug:bool = False) -> None:
+        self.isDebug = debug
         self.host = host
         self.port = port
         self.sock = socket.socket()
@@ -119,22 +120,29 @@ class Server :
                     break
                 else: print(f"data recived {data.__len__()}")
 
-                res = self._handleAudioBytes(data,address[0])
+                if not self.isDebug:
 
-                if(res.status_code != 200):
-                    print('error in whisper ai request {}'.format(res.reason))
-                    break
-                transcript:str = res.json()['transcript']
-                print('whisper transcript response to "{}" => {}'.format(address[0],transcript))
-                empty_script:bool =  transcript.strip() == "ترجمة نانسي قنقر" or transcript.strip() == "اشتركوا في القناة"
-                if(empty_script):
-                    print('whisper recived no transcripeable audio')
+                    res = self._handleAudioBytes(data,address[0])
 
-                if(transcript != None and len(transcript) != 0 and not empty_script):
-                    ai_response = self.aiService.getApiResponseFromMessageAsText(transcript.strip())
-                    print('ai model {} response to "{}": {}'.format(self.aiService.model.name,address[0],ai_response))
-                    if(ai_response):
-                        self._SendMsg(ai_msg=ai_response, conn=conn)
+                    if(res.status_code != 200):
+                        print('error in whisper ai request {}'.format(res.reason))
+                        break
+                    transcript:str = res.json()['transcript']
+                    print('whisper transcript response to "{}" => {}'.format(address[0],transcript))
+                    empty_script:bool =  transcript.strip() == "ترجمة نانسي قنقر" or transcript.strip() == "اشتركوا في القناة"
+                    if(empty_script):
+                        print('whisper recived no transcripeable audio')
+
+                    if(transcript != None and len(transcript) != 0 and not empty_script):
+                        ai_response = self.aiService.getApiResponseFromMessageAsText(transcript.strip())
+                        print('ai model {} response to "{}": {}'.format(self.aiService.model.name,address[0],ai_response))
+                        if(ai_response):
+                            self._SendMsg(ai_msg=ai_response, conn=conn)
+                else:
+                    from AudioFileHandler import AudioFileHandler
+                    handler = AudioFileHandler("lotsoftimes-78085.mp3")
+                    bytes = handler.getBytes()
+                    print(bytes.__len__())
         
         except Exception as e:
             print('err {}'.format(e))
