@@ -1,9 +1,7 @@
-import socket
+import socket, requests, time, threading
 from RasaAiService import RasaAiService
 from ChatGPTAiService import ChatGPTAiService
 from AIModel import AiModel , AiType
-import requests
-import time,os , threading, tempfile
 from datetime import datetime
 from pydub import AudioSegment 
 from TTSServiceCoqui import CoquiApiService
@@ -15,19 +13,18 @@ WHISPERAIPORT = 5000
 CHANNELS = 1
 RATE = 16000
 SECONDS_AFTER_LOOP = 4
-useCoqui:bool = False
 
 
 
 class Server :
-    def __init__(self, host:str, port:int, model:AiModel) -> None:
+    def __init__(self, host:str, port:int, model:AiModel, useCoqui:bool = False) -> None:
         self.host = host
         self.port = port
         self.sock = socket.socket()
         self.serving = False
         self.sttService = STTServiceFasterWhisper()
         self.aiService = RasaAiService(model=model) if model.type == AiType.RASA else ChatGPTAiService(model=model)
-        self.ttsService = TransformersApiService()
+        self.ttsService = CoquiApiService() if useCoqui else TransformersApiService()
 
     def serve(self):
         try:
@@ -53,6 +50,8 @@ class Server :
         formatted = '{}-{}-{}-{}-{}'.format(now.day,now.hour,now.minute,now.second,now.microsecond)
         return formatted
 
+
+
     def _handleAudioBytes(self, data:bytes, id:str) -> requests.Response:
         dataLen = len(data)
         sample_width = 2 if dataLen % (CHANNELS * 2) == 0 else 4 if dataLen % (CHANNELS * 4) == 0 else 1
@@ -60,6 +59,8 @@ class Server :
         exportData = audio.export(out_f='temp-audio-{}-{}.wav'.format(id.replace('.',''), self.__getDateTimeFormatted()),format='wav')
         res = self.sttService.transcriptFromFile(exportData)
         return res
+    
+
     def _recvData(self, conn:socket.socket,):
         data = None
         try:
@@ -70,11 +71,15 @@ class Server :
             print(e)
         finally:
             return data;
+
+
     def __handleConnection(self):
         conn , address = self.sock.accept()
         print("Connection from: " + str(address))
         thread = threading.Thread(target=self.__handleClient, args=(conn,address))
         thread.start()
+
+    
     def _sendData(self , msg:bytes, conn: socket.socket) -> None:
         if(msg):
             MSGLEN = msg.__len__()
@@ -85,6 +90,16 @@ class Server :
                 if sent == 0:
                     raise RuntimeError("socket connection broken")
                 totalsent = totalsent + sent
+
+
+    def _SendMsg(self, conn:socket.socket, ai_msg:str):
+        msg = self.ttsService.getAudioBytes(message=ai_msg)
+        self._sendData(msg, conn)
+        print(f"data send - {msg.__len__()}")
+        time.sleep(2)
+        conn.sendall(bytes("stopped","utf-8"))
+
+
 
     def __handleClient(self, conn:socket.socket, address):
         try:
@@ -119,27 +134,9 @@ class Server :
                     ai_response = self.aiService.getApiResponseFromMessageAsText(transcript.strip())
                     print('ai model {} response to "{}": {}'.format(self.aiService.model.name,address[0],ai_response))
                     if(ai_response):
-                        msg = self.ttsService.getAudioBytes(message=ai_response)
-                        self._sendData(msg, conn)
-                        print(f"data send - {msg.__len__()}")
-                        time.sleep(2)
-                        conn.sendall(bytes("stopped","utf-8"))
+                        self._SendMsg(ai_msg=ai_response, conn=conn)
+        
         except Exception as e:
             print('err {}'.format(e))
         finally:            
             conn.close() # close the connection
-
-    
-
-
-
-if __name__ == "__main__":
-    HOST,PORT = 'localhost', 43007
-
-    for model in AiModel.getAllModels():
-        serverHost, ServerPort = model.getServerAddress()
-        server = Server(host=serverHost,port=ServerPort,model=model)
-        t = threading.Thread(target=server.serve, name='{} socket thread'.format(model.name))
-        t.start()
-    # server = Server(host=HOST, port= PORT, model= AiModel.getAllModels()[0])
-    # server.serve()
