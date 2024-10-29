@@ -106,11 +106,13 @@ class Server :
         try:
             print(f'handeling client {address[0]}')
             while True:
+                print(f'starting data while loop')
                 end_time = self._getEndTime()
                 data = None
                 while time.time() < end_time:
                     recieved = self._recvData(conn)
                     if(recieved):
+                        print(f"recieved {recieved.__len__()}")
                         if(data):
                             data+= recieved
                         else:
