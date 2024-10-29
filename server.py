@@ -129,6 +129,9 @@ class Server :
                 end_time = self._getEndTime()
                 data = None
                 while time.time() < end_time:
+                    isClosed: bool = self.__is_socket_closed(conn)
+                    if(isClosed):
+                        break
                     recieved = self._recvData(conn)
                     if(recieved):
                         print(f"recieved {recieved.__len__()}")
